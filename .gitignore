@@ -1,0 +1,140 @@
+
+# ==========================================
+# ESP-IDF / ESP32 Project .gitignore
+# ==========================================
+
+
+# ------------------------------------------
+# ESP-IDF Build Outputs
+# ------------------------------------------
+
+build/
+**/build/
+
+*.o
+*.a
+*.out
+*.exe
+*.bin
+*.elf
+*.map
+
+flasher_args.json
+compile_commands.json
+
+
+# ------------------------------------------
+# ESP-IDF Configuration
+# ------------------------------------------
+
+# Keep sdkconfig tracked for shared project settings
+# Ignore old and temporary configurations
+sdkconfig.old
+sdkconfig.*.old
+
+# Local ESP-IDF installations and generated dependencies
+.espressif/
+managed_components/
+
+# Legacy ESP-IDF component metadata
+/components/.idf/
+**/components/.idf/
+
+
+# ------------------------------------------
+# CMake Generated Files
+# ------------------------------------------
+
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+Testing/
+
+
+# ------------------------------------------
+# VS Code / Development Tools
+# ------------------------------------------
+
+# Ignore local editor configurations
+.vscode/
+
+# Language server caches
+.clangd/
+.ccls-cache/
+.cache/
+
+
+# ------------------------------------------
+# Python / ESP-IDF Tools
+# ------------------------------------------
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+
+dist/
+venv/
+.venv/
+env/
+
+
+# ------------------------------------------
+# Temporary Files
+# ------------------------------------------
+
+*~
+*.swp
+*.swo
+*.bak
+*.tmp
+*.temp
+
+*.log
+
+
+# ------------------------------------------
+# Windows
+# ------------------------------------------
+
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+*.user
+*.suo
+*.sln.docstates
+
+
+# ------------------------------------------
+# macOS
+# ------------------------------------------
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+
+# ------------------------------------------
+# Linux
+# ------------------------------------------
+
+.directory
+
+
+# ==========================================
+# Files Intentionally Tracked
+# ==========================================
+
+# ESP-IDF project files:
+# CMakeLists.txt
+# main/
+# components/ (custom source components)
+# sdkconfig
+# sdkconfig.defaults
+# dependencies.lock (if generated)
+# README.md
+# .gitignore
