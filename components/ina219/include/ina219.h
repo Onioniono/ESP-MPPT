@@ -4,8 +4,9 @@
 #include "driver/i2c_master.h"
 
 typedef struct {
-    float voltage;
-    float current;
+    float voltage_v;
+    float current_a;
+    float power_w;
 } ina219_data_t;
 
 esp_err_t ina219_init(void);                    // Initialize the INA219 sensor and configure it for measurement

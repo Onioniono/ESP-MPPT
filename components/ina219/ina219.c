@@ -1,4 +1,4 @@
-#include "current_sense.h"
+#include "ina219.h"
 
 #include <stdint.h>
 
@@ -35,11 +35,17 @@ static esp_err_t ina219_write_register(uint8_t reg, uint8_t value) {
 }
 
 // INA219 Read
-static esp_err_t ina219_read_register(uint8_t start_reg, uint8_t *buffer, size_t length) {
+static esp_err_t ina219_read_registers(uint8_t start_reg, uint8_t *buffer, size_t length) {
     return i2c_master_transmit_receive(ina219_handle, &start_reg, sizeof(start_reg), buffer, length, INA219_I2C_TIMEOUT_MS);
 }
 
 // INA219 Initialization
+/* Description:
+- Obtain I2C Bus Handle
+- Configure INA219 device with I2C address and settings
+- Add INA219 device to I2C bus
+- Configure INA219 measurement settings
+*/
 esp_err_t ina219_init(void) {
     // Get I2C Bus Handle
     i2c_master_bus_handle_t bus_handle = i2c_bus_get_handle();
@@ -74,7 +80,8 @@ esp_err_t ina219_init(void) {
         return err;
     }
 
-    /* Configure: 0x3E67
+    // Configure measurement settings
+    /* Register Value: 0x3E67
     BRNG [13]: Bus Voltage measurement range — 32V (1'b1)
     PGA [12:11]: Shunt Voltage measurement range — +320mV (1'b11)
     BADC [10:7]: Bus Volttage ADC resolution/averaging — 12-bit, 16 samples (1'b1100)
@@ -88,6 +95,51 @@ esp_err_t ina219_init(void) {
         ESP_LOGE(TAG, "Failed to configure initial settings");
         return err;
     }
+
+    return ESP_OK;
+}
+
+// INA219 Read Sensor Data
+/* Notes:
+Vsource = Vbus + Vshunt
+Isource = Vshunt / 0.1
+Psource = Vsource * Isource
+- Shunt Resistance = 100 ohms
+*/
+esp_err_t ina219_read(ina219_data_t *data) {
+    // FAILSFE
+    if (data == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    // Read raw data (shunt & bus voltages)
+    uint8_t raw_shunt[2];
+    uint8_t raw_bus[2];
+     // raw_shunt
+    esp_err_t err =
+    ina219_read_registers(0x01, raw_shunt, sizeof(raw_shunt));
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to read shunt voltage: %s", esp_err_to_name(err));
+        return err;
+    }
+     // raw_bus
+    err =
+    ina219_read_registers(0x02, raw_bus, sizeof(raw_bus));
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to read bus voltage: %s", esp_err_to_name(err));
+        return err;
+    }
+    
+    // Shift, combine, & convert raw data bytes
+     // shift_shunt
+    int16_t shift_shunt = (int16_t)(((uint16_t)raw_shunt[0] << 8) | raw_shunt[1]);
+    data->shunt_voltage_v = shift_shunt * 0.00001f;
+     // shift_bus
+    uint16_t shift_bus = (((uint16_t)raw_bus[0] << 8 | raw_bus[1]) >> 3);
+    data->bus_voltage_v = shift_bus * 0.004f;
+     // calculate current & power
+    data->current_a = data->shunt_voltage_v / 0.1f;
+    data->power_w = data->voltage_v * data->current_a;
 
     return ESP_OK;
 }
