@@ -72,7 +72,7 @@ esp_err_t ina219_init(void) {
     };
 
     // Add INA219 device to I2C Bus
-    esp_err_t err =
+    err =
     i2c_master_bus_add_device(bus_handle, &device_config, &ina219_handle);
     // FAILSAFE
     if (err != ESP_OK) {
@@ -133,12 +133,11 @@ esp_err_t ina219_read(ina219_data_t *data) {
     // Shift, combine, & convert raw data bytes
      // shift_shunt
     int16_t shift_shunt = (int16_t)(((uint16_t)raw_shunt[0] << 8) | raw_shunt[1]);
-    data->shunt_voltage_v = shift_shunt * 0.00001f;
+    data->current_a = (shift_shunt * 0.00001f) / 0.1f;
      // shift_bus
     uint16_t shift_bus = (((uint16_t)raw_bus[0] << 8 | raw_bus[1]) >> 3);
-    data->bus_voltage_v = shift_bus * 0.004f;
-     // calculate current & power
-    data->current_a = data->shunt_voltage_v / 0.1f;
+    data->voltage_v = shift_bus * 0.004f;
+     // power
     data->power_w = data->voltage_v * data->current_a;
 
     return ESP_OK;
