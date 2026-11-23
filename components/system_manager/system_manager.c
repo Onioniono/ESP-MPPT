@@ -63,7 +63,7 @@ esp_err_t system_manager_test(void) {
     #if TEST_INA219
         ina219_data_t data;
         while (1) {
-            err = ina219_read(&data);
+            esp_err_t err = ina219_read(&data);
             if (err == ESP_OK) {
                 ESP_LOGI(TAG, "INA219 readings - Voltage: %.2f V, Current: %.2f A, Power: %.2f W",
                 data.voltage_v, data.current_a, data.power_w);
