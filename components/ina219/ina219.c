@@ -29,8 +29,13 @@ static const char *TAG = "ina219";
 static i2c_master_dev_handle_t ina219_handle = NULL;
 
 // INA219 Write
-static esp_err_t ina219_write_register(uint8_t reg, uint8_t value) {
-    uint8_t buffer[3] = {reg,value};
+static esp_err_t ina219_write_register(uint8_t reg, uint16_t value) {
+    uint8_t buffer[3];
+
+    buffer[0] = reg;
+    buffer[1] = (uint8_t)(value >> 8);
+    buffer[2] = (uint8_t)(value & 0xFF);
+
     return i2c_master_transmit(ina219_handle, buffer, sizeof(buffer), INA219_I2C_TIMEOUT_MS);
 }
 
@@ -104,7 +109,7 @@ esp_err_t ina219_init(void) {
 Vsource = Vbus + Vshunt
 Isource = Vshunt / 0.1
 Psource = Vsource * Isource
-- Shunt Resistance = 100 ohms
+- Shunt Resistance = 0.1 ohms
 */
 esp_err_t ina219_read(ina219_data_t *data) {
     // FAILSFE
@@ -136,6 +141,7 @@ esp_err_t ina219_read(ina219_data_t *data) {
     data->current_a = (shift_shunt * 0.00001f) / 0.1f;
      // shift_bus
     uint16_t shift_bus = (((uint16_t)raw_bus[0] << 8 | raw_bus[1]) >> 3);
+        // ESP_LOGI(TAG, "Raw Bus Bytes: 0x%02X 0x%02X", raw_bus[0], raw_bus[1]);
     data->voltage_v = shift_bus * 0.004f;
      // power
     data->power_w = data->voltage_v * data->current_a;
