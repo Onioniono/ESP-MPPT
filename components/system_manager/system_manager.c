@@ -31,7 +31,7 @@ esp_err_t system_manager_init(void)
     #endif
     
     // Initialize the INA219 sensor if enabled
-    #if ENABLE_BME280
+    #if ENABLE_INA219
         ESP_ERROR_CHECK(ina219_init());
     #endif
 
@@ -61,7 +61,17 @@ esp_err_t system_manager_test(void) {
     
     // INA219 sensor test
     #if TEST_INA219
-        // placeholder
+        ina219_data_t data;
+        while (1) {
+            err = ina219_read(&data);
+            if (err == ESP_OK) {
+                ESP_LOGI(TAG, "INA219 readings - Voltage: %.2f V, Current: %.2f A, Power: %.2f W",
+                data.voltage_v, data.current_a, data.power_w);
+            } else {
+                ESP_LOGE(TAG, "INA219 read failed: %s", esp_err_to_name(err));
+            }
+            vTaskDelay(pdMS_TO_TICKS(5000));
+        }
     #endif
 
     // POWER_MONITOR test
