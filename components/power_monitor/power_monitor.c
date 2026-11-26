@@ -1,4 +1,5 @@
 #include "power_monitor.h"
+#include "power_optimize.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -25,16 +26,14 @@ static void power_monitor_task(void *arg) {
     while (1) {
         esp_err_t err
         = ina219_read(&data);
-        while (1) {
-            esp_err_t err = ina219_read(&data);
-            if (err == ESP_OK) {
-                ESP_LOGI(TAG, "INA219 readings - Voltage: %.2f V, Current: %.2f A, Power: %.2f W",
-                data.voltage_v, data.current_a, data.power_w);
-            } else {
-                ESP_LOGE(TAG, "INA219 read failed: %s", esp_err_to_name(err));
-            }
-            vTaskDelay(pdMS_TO_TICKS(POWER_MONITOR_TASK_PERIOD_MS));
+        if (err == ESP_OK) {
+            err = power_optimize_send(&data);
+            ESP_LOGI(TAG, "INA219 readings - Voltage: %.2f V, Current: %.2f A, Power: %.2f W",
+            data.voltage_v, data.current_a, data.power_w);
+        } else {
+            ESP_LOGE(TAG, "INA219 read failed: %s", esp_err_to_name(err));
         }
+        vTaskDelay(pdMS_TO_TICKS(POWER_MONITOR_TASK_PERIOD_MS));
     }
 }
 

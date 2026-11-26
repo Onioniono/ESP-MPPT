@@ -8,6 +8,7 @@
 #include "i2c_bus.h"
 #include "ina219.h"
 #include "power_monitor.h"
+#include "power_optimize.h"
 
 /************************* 
 Purpose: 
@@ -15,7 +16,6 @@ Initialize, test, and manage system-wide services.
 *************************/
 
 static const char *TAG = "SYSTEM_MANAGER";      // Tag for logging
-static QueueHandle_t system_queue = NULL;       // Private Queue Handle
 #define SYSTEM_MANAGER_TASK_STACK_SIZE 3072
 #define SYSTEM_MANAGER_TASK_PRIORITY 3
 
@@ -49,6 +49,8 @@ esp_err_t system_manager_start(void)
 
     // Start the environment service if BME280 is enabled
     #if ENABLE_POWER_MONITOR
+        ESP_LOGI(TAG, "Starting power optimize...");
+        ESP_ERROR_CHECK(power_optimize_start());
         ESP_LOGI(TAG, "Starting power monitor...");
         ESP_ERROR_CHECK(power_monitor_start());
     #endif
