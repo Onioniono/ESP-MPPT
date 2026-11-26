@@ -9,6 +9,7 @@
 #include "ina219.h"
 #include "power_monitor.h"
 #include "power_optimize.h"
+#include "pwm_control.h"
 
 /************************* 
 Purpose: 
@@ -35,6 +36,11 @@ esp_err_t system_manager_init(void)
     #if ENABLE_INA219
         ESP_LOGI(TAG, "Initializing INA219...");
         ESP_ERROR_CHECK(ina219_init());
+    #endif
+
+    #if ENABLE_PWM_CONTROL
+        ESP_LOGI(TAG, "Initializing PWM Control...");
+        ESP_ERROR_CHECK(pwm_control_init());
     #endif
 
     // Return ESP_OK to indicate successful initialization

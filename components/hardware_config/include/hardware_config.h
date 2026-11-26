@@ -14,3 +14,5 @@ Notes:
 
 #define I2C_SDA_GPIO GPIO_NUM_21
 #define I2C_SCL_GPIO GPIO_NUM_22
+
+#define PWM_PIN GPIO_NUM_23 // currently a placeholder number

@@ -68,7 +68,7 @@ static void power_optimize_task(void *pvParameters) {
             float next_duty = duty_cycle + (direction*duty_step);
             next_duty = constrain_duty(next_duty);
             /*
-            esp_err_t err = pwm_set_duty(next_duty);     // Currently unimplemented
+            esp_err_t err = pwm_control_set_duty(next_duty);     // Currently unimplemented
             if (err != ESP_OK) {
                 // Handle PWM failure
                 continue;
