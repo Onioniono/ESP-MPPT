@@ -27,11 +27,13 @@ esp_err_t system_manager_init(void)
     
     // Initialize the I2C bus if enabled
     #if ENABLE_I2C_BUS
+        ESP_LOGI(TAG, "Initializing i2c bus...");
         ESP_ERROR_CHECK(i2c_bus_init());
     #endif
     
     // Initialize the INA219 sensor if enabled
     #if ENABLE_INA219
+        ESP_LOGI(TAG, "Initializing INA219...");
         ESP_ERROR_CHECK(ina219_init());
     #endif
 
@@ -47,6 +49,7 @@ esp_err_t system_manager_start(void)
 
     // Start the environment service if BME280 is enabled
     #if ENABLE_POWER_MONITOR
+        ESP_LOGI(TAG, "Starting power monitor...");
         ESP_ERROR_CHECK(power_monitor_start());
     #endif
 
@@ -72,11 +75,6 @@ esp_err_t system_manager_test(void) {
             }
             vTaskDelay(pdMS_TO_TICKS(5000));
         }
-    #endif
-
-    // POWER_MONITOR test
-    #if TEST_POWER_MONITOR
-        // placeholder
     #endif
 
    return ESP_OK; // Placeholder return value for testing purposes
