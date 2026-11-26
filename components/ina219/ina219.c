@@ -8,6 +8,11 @@
 
 #include "i2c_bus.h"
 
+/************************* 
+Purpose: 
+Initialize the INA219 currense sense.
+*************************/
+
 #define INA219_I2C_ADDRESS 0x40
 
 #define INA219_REG_CONFIG 0x00

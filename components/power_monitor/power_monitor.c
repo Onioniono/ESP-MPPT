@@ -8,6 +8,11 @@
 
 #include "ina219.h"
 
+/************************* 
+Purpose: 
+Periodically measure INA219 values.
+*************************/
+
 #define POWER_MONITOR_TASK_PERIOD_MS 5000 // 5 seconds
 #define POWER_MONITOR_STACK_SIZE 4096
 #define POWER_MONITOR_TASK_PRIORITY 5
